@@ -1,0 +1,18 @@
+using System;
+
+namespace Barulin_Alexey_Romanovich_Task_02
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            string Input;
+            do
+            {
+                Console.WriteLine("Введите текст.");
+                Input = Console.ReadLine();
+            }
+            while (Input != "exit");
+        }
+    }
+}
