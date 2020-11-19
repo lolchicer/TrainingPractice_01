@@ -1,0 +1,68 @@
+using System;
+
+namespace Barulin_Alexey_Romanovich_Task_03
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            //Объявление переменных для цикла.
+            bool CycleEnd = false;
+            bool PasswordCorrectness = false;
+            int Counter = 3;
+
+            //Цикл вводов пароля. Сделан для того, чтобы дать пользователю несколько попыток.
+            do
+            {
+                //Вывод сообщения перед вводом пароля.
+                if (Counter == 3)
+                {
+                    Console.WriteLine("Введите пароль.");
+                }
+                else
+                {
+                    switch (Counter)
+                    {
+                        case 1:
+                            Console.WriteLine("У вас осталось " + Counter + " попытка.");
+                            break;
+                        case 2:
+                            Console.WriteLine("У вас осталось " + Counter + " попытки.");
+                            break;
+                    } 
+                }
+
+                //Ввод пароля.
+                string Password = Console.ReadLine();
+                
+                //Переменная, считающая попытки. Изначально попыток 3. Если они заканчиваются, булевая переменная CycleEnd, являющаяся условием завершения цикла, становится истинной.
+                Counter--;
+                if (Counter == 0)
+                {
+                    CycleEnd = true;
+                }
+
+                //Проверка пароля на правильность. Если это условие верно, переменная CycleEnd становится истинной.
+                if (Password == "qwerty")
+                {
+                    CycleEnd = true;
+                    PasswordCorrectness = true;
+                }
+
+                //Сообщение, выводимое перед концом цикла.
+                if (CycleEnd)
+                {
+                    if (PasswordCorrectness)
+                    {
+                        Console.WriteLine("кто");
+                    }
+                    else
+                    {
+                        Console.WriteLine("У вас не осталось попыток.");
+                    }
+                }
+            }
+            while (CycleEnd == false);
+        }
+    }
+}
