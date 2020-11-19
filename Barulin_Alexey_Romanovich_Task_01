@@ -1,0 +1,30 @@
+using System;
+
+namespace Barulin_Alexey_Romanovich_Task_01
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Введите золото.");
+            string Input = Console.ReadLine();
+            int Gold = Convert.ToInt32(Input);
+
+            int GoldStart = Gold;
+
+            Console.WriteLine("1 кристалл стоит 3 золота. Сколько кристаллов вы будете покупать?\n");
+            Input = Console.ReadLine();
+            int Crystals = Convert.ToInt32(Input);
+            Gold -= (Crystals * 3);
+
+            if (Gold < 0)
+            {
+                Console.WriteLine("Теперь у вас есть " + 0 + " кристаллов и " + GoldStart + " золота.\n");
+            }
+            else
+            {
+                Console.WriteLine("Теперь у вас есть " + Crystals + " кристаллов и " + Gold + " золота.\n");
+            }
+        }
+    }
+}
