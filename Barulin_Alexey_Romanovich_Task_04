@@ -1,0 +1,169 @@
+using System;
+
+namespace Barulin_Alexey_Romanovich_Task_04
+{
+	class Unit
+	{
+		//Имя объекта.
+		protected string _name = "???";
+
+		//Единицы здоровья объекта и его максимальное здоровье.
+		protected int _healthMax = 20;
+		protected int _healthPoints;
+
+		//Переменная, определяющая, поражён ли объект.
+		protected bool _death = false;
+		internal bool Death { get { return _death; } }
+
+		//Делегат для действий объекта.
+		internal delegate void UnitInput(Unit Target);
+		internal UnitInput UnitMove;
+		internal Unit()
+		{
+			_healthPoints = _healthMax;
+		}
+
+		//Функция для получения урона объектом. Нужна для проверки
+		internal void DamageReceive(int Damage)
+        {
+			_healthPoints -= Damage;
+			if (_healthPoints > _healthMax) _healthPoints = _healthMax;
+			if (_healthPoints <= 0)
+			{
+				Console.WriteLine(_name + " погиб!");
+				_death = true;
+			}
+		}
+
+		//Функции для получения имени и здоровья объекта вне его.
+		internal string Name()
+		{
+			return new string(_name);
+		}
+		internal string Health()
+        {
+			return (_healthPoints + "/" + _healthMax);
+        }
+	}
+  
+  class Player : Unit
+	{
+		//Конструктор класса игрока требует его имя.
+		internal Player(string Name)
+		{
+			_name = Name;
+			UnitMove = PlayerMove;
+		}
+
+		//Действия игрока во время игры.
+		void PlayerMove(Unit Target)
+    {
+			Console.WriteLine("Выберите заклинание.\n1: Огненный шар\n2: Большой огненный шар\n3: Лечение");
+			int _switch;
+			Int32.TryParse(Console.ReadLine(), out _switch);
+			switch (_switch)
+			{
+				case 1:
+					Target.DamageReceive(Program.Random.Next(6, 10));
+					Console.Write(_name + " метнул огненный шар! HP " + Program.NameCase(Target.Name()) + ": " + Target.Health());
+					break;
+				case 2:
+					Target.DamageReceive(Program.Random.Next(2, 20));
+					Console.WriteLine(_name + " метнул большой огненный шар!" + Program.NameCase(Target.Name()) + ": " + Target.Health());
+					break;
+				case 3:
+					DamageReceive(Program.Random.Next(-6, 10));
+					Console.WriteLine(_name + " полечил себя! HP: " + Health());
+					break;
+			}
+    }
+	}
+  
+  class Boss : Unit
+	{
+		internal Boss()
+		{
+			_name = "Колдун";
+			_healthMax = 30;
+			UnitMove = BossMove;
+		}
+
+		//Действия противника во время игры.
+    void BossMove(Unit Target)
+    {
+			int _switch = Program.Random.Next(2);
+			switch (_switch)
+            {
+				case 0:
+					Target.DamageReceive(Program.Random.Next(6, 10));
+					Console.Write(_name + " метнул огненный шар! HP " + Program.NameCase(Target.Name()) + ": " + Target.Health());
+					break;
+				case 1:
+					Target.DamageReceive(Program.Random.Next(2, 20));
+					Console.WriteLine(_name + " метнул большой огненный шар!" + Program.NameCase(Target.Name()) + ": " + Target.Health());
+					break;
+			}
+    }
+	}
+  
+  static class Program
+  {
+    //Объект класса Random для получения случайно-генерируемых чисел.
+    static internal Random Random = new Random();
+    //Функция для склонения имён объектов.
+    internal static string NameCase(string _name)
+    {
+      string _nameCase;
+      if (_name == "Колдун") _nameCase = "Колдуна";
+      else _nameCase = _name;
+      return _nameCase;
+    }
+
+    static void Main(string[] args)
+    {
+      //Ввод имени персонажа пользователя.
+      Console.WriteLine("Введите имя вашего персонажа.");
+      //Объявление игрока и противника.
+      Player Player = new Player(Console.ReadLine());
+      Boss Boss = new Boss();
+      //Переменные для обозначения атакующего и его цели.
+      Unit Attacker;
+      Unit Target;
+      //Случайный выбор ходящего первым.
+      int Switch = Random.Next(2);
+      if (Switch == 0)
+      {
+        Attacker = Player;
+        Target = Boss;
+      }
+      else
+      {
+        Attacker = Boss;
+        Target = Player;
+      }
+      
+      //Счётчик ходов.
+      int _tick = 1;
+      
+      //Цикл, где проходит игра. При смерти одного из её участников, она кончается.
+      while (!Boss.Death && !Player.Death)
+      {
+        //Номер хода и имя атакующего.
+        Console.WriteLine("Ход " + _tick + "!\nХодит " + Attacker.Name() + "!");
+        //Ход атакующего.
+        Attacker.UnitMove(Target);
+        Console.WriteLine();
+        //Смена сторон.
+        Unit unit = Attacker;
+        Attacker = Target;
+        Target = unit;
+        //Вывод сообщения о поражении или победе.
+        if (Boss.Death) Console.WriteLine("Победа!");
+        if (Player.Death) Console.WriteLine("Поражение!");
+        //Смена хода.
+        _tick++;
+        }
+      }
+    }
+  }
+}
