@@ -1,0 +1,35 @@
+using System;
+
+namespace Barulin_Alexey_Romanovich_Task_07
+{
+    class Program
+    {
+        //Пользователю предлагается ввести размер массива и заполнить его. После этого, этот массив выводится в консоль, на нём применяется функция Shuffle и он выводится ещё раз.
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Введите размер массива.");
+            Int32.TryParse(Console.ReadLine(), out int count);
+            int[] array = new int[count];
+            for (int i = 0; i < array.Length; i++) array[i] = i;
+            Console.WriteLine("Оригинальный массив:");
+            foreach (int element in array) Console.Write(element + ", ");
+            Console.WriteLine();
+            Shuffle(array);
+            Console.WriteLine("Изменённый массив:");
+            foreach (int element in array) Console.Write(element + ", ");
+        }
+
+        //Функция создаёт объект класса Random, и в цикле for начинает менять местами каждый элемент с индексом i с случайно выбранным другим элементом. 
+        static void Shuffle(int[] array)
+        {
+            Random random = new Random();
+            for (int i = 0; i < array.Length; i++)
+            {
+                int index = random.Next(array.Length);
+                int buff = array[index];
+                array[index] = array[i];
+                array[i] = buff;
+            }
+        }
+    }
+}
