@@ -1,0 +1,172 @@
+using System;
+
+namespace Barulin_Alexey_Romanovich_Task_06
+{
+    static class Program
+    {
+        //Массивы ФИО и должностей.
+        static string[] _fullNameList = new string[0];
+        static string[] _postList = new string[0];
+        //Главное меню.
+        static void Main(string[] args)
+        {
+            //Цикл, продолжающийся до изменения переменной SceneContinue. Она изменяется при выборе одного из действий в меню.
+            bool SceneContinue = true;
+            while (SceneContinue)
+            {
+                Console.Clear();
+                Console.WriteLine("Отдел кадров\n" +
+                    "1: добавить досье\n" +
+                    "2: удалить досье\n" +
+                    "3: вывести все досье\n" +
+                    "4: поиск досье по фамилии\n" +
+                    "5: выход из программы");
+                switch (Console.ReadLine())
+                {
+                    case "1":
+                        /*Составление досье. Для составления используется функция с параметрами типа string, обозначающими ФИО и должность.
+                        ФИО записывается через символ абзаца.*/
+                        string fullName, post;
+                        Console.WriteLine("Введите фамилию.");
+                        fullName = Console.ReadLine();
+                        Console.WriteLine("Введите имя.");
+                        fullName += '\n' + Console.ReadLine();
+                        Console.WriteLine("Введите отчество.");
+                        fullName += '\n' + Console.ReadLine();
+                        Console.WriteLine("Введите должность.");
+                        post = Console.ReadLine();
+                        FileAdd(fullName, post);
+                        Console.WriteLine("Досье добавлено. Нажмите любую клавишу.");
+                        Console.ReadKey();
+                        break;
+                    case "2":
+                        /*Удаление досье с указанным номером. Для удаления досье используется функция с параметром int, обозначающая индекс досье.
+                        Для входного параметра в int конвертируется ввод в консоли.*/
+                        Console.WriteLine("Введите номер досье.");
+                        Int32.TryParse(Console.ReadLine(), out int count);
+                        FileRemove(count - 1);
+                        Console.ReadKey();
+                        break;
+                    case "3":
+                        /*Вывод всех досье. Для вывода досье используется функция с параметром типа int[], обозначающий индексы нужных досье.
+                        Создаётся новый массив, содержащий индексы всех существующих досье.*/
+                        int[] filesCounts = new int[_fullNameList.Length];
+                        for (int i = 0; i < filesCounts.Length; i++) filesCounts[i] = i;
+                        FileList(filesCounts);
+                        Console.ReadKey();
+                        break;
+                    case "4":
+                        /*Поиск досье по фамилии. Для поиска используется функция FileSearch с параметром string, обозначающая фамилию.
+                        Также для вывода досье используется функция FileList.*/
+                        Console.WriteLine("Введите фамилию.");
+                        FileList(FileSearch(Console.ReadLine()));
+                        Console.ReadKey();
+                        break;
+                    case "5":
+                        //Выход из программы. Изменяется переменная SceneContinue.
+                        SceneContinue = false;
+                        break;
+                }
+            }
+        }
+
+        //Функция добавления досье.
+        static void FileAdd(string fullName, string post)
+        {
+            //Создаётся две переменных, ссылающихся на массивы полей _postList и _fullNameList.
+            string[] postList = _postList;
+            string[] fullNameList = _fullNameList;
+            //В поля _postList и _fullNameList записываются новые массивы, увеличенные на один элемент.
+            _postList = new string[_postList.Length + 1];
+            _fullNameList = new string[_fullNameList.Length + 1];
+            //Цикл перезаписывает значения из postList, fullNameList в поля класса.
+            for (int i = 0; i < postList.Length; i++)
+            {
+                _postList[i] = postList[i];
+                _fullNameList[i] = fullNameList[i];
+            }
+            //В оставшиеся элементы массивов записываются входные данные.
+            _postList[_postList.Length - 1] = post;
+            _fullNameList[_fullNameList.Length - 1] = fullName;
+        }
+
+        //Функция удаления досье.
+        static void FileRemove(int count)
+        {
+            //Попытка удалить досье с заданным индексом. При неудаче выведется соответствующее сообщение.
+            try
+            {
+                //Создаётся две переменных, ссылающихся на массивы полей _postList и _fullNameList.
+                string[] postList = _postList;
+                string[] fullNameList = _fullNameList;
+                //В поля _postList и _fullNameList записываются новые массивы, уменьшенные на один элемент.
+                _postList = new string[_postList.Length - 1];
+                _fullNameList = new string[_fullNameList.Length - 1];
+                //Цикл for перезаписывает значения из postList, fullNameList в поля класса. При этом, в цикле для индексов заполняемых массивов используется ещё одна переменная помимо i: int j.
+                //i используется в качестве индекса postList и fullNameList, j – в качестве индекса _postList и _fullNameList.
+                //Если j равна входному параметру, перезапись и увеличение j не осуществляются.
+                int j = 0;
+                for (int i = 0; i < postList.Length; i++)
+                    if (j != count)
+                    {
+                        _postList[j] = postList[i];
+                        _fullNameList[j] = fullNameList[i];
+                        j++;
+                    }
+                Console.WriteLine("Досье удалено. Нажмите любую клавишу.");
+            }
+            catch
+            {
+                Console.WriteLine("Досье с таким номером нет.");
+            }
+        }
+
+        //Функция вывода досье.
+        static void FileList(int[] filesCounts)
+        {
+            //Цикл foreach выводит номер досье, его ФИО и должность. При этом, символы абзаца в ФИО заменятюся на пробелы.
+            foreach (int fileCount in filesCounts)
+            {
+                Console.Write(fileCount + 1 + ": ");
+                foreach (char symbol in _fullNameList[fileCount])
+                    if (symbol == '\n') Console.Write(' ');
+                    else Console.Write(symbol);
+                Console.Write(" – " + _postList[fileCount] + '\n');
+            }
+            //Выводится также число досье, на которое ссылаются входные данные.
+            if (filesCounts.Length == 0) Console.WriteLine("Досье отсутствуют.");
+            else Console.WriteLine("Всего досье: " + filesCounts.Length + ".");
+        }
+
+        //Функция поиска досье.
+        static int[] FileSearch(string name)
+        {
+            //Массив с индексами ФИО, имеющими указанную в параметре фамилию.
+            int[] soughtNamesCounts = new int[0];
+            //Цикл foreach, добавляющий в вышеуказанный массив элементы.
+            foreach (string fullName in _fullNameList)
+            {
+                bool rightName = true;
+                //Первый цикл даёт rightName значение false, если символ абзаца в ФИО имеет там индекс, больший на единицу индекса последнего символа в name.
+                int j = 0;
+                while (fullName[j] != '\n') j++;
+                if (j == name.Length)
+                    //Второй икл даёт rightName значение false, если какой-либо из символов в ФИО до конца name не соответствует символу из name.
+                    for (int i = 0; i < j; i++) if (name[i] != fullName[i]) rightName = false; else;
+                else rightName = false;
+                //Если rightName остаётся со значением true, в массив soughtNamesCounts добавляется индекс проверяемого ФИО.
+                if (rightName) soughtNamesCounts = AddCount(soughtNamesCounts, Array.IndexOf(_fullNameList, fullName));
+            }
+            return soughtNamesCounts;
+        }
+
+        //Функция расширяет входной массив, как в FileAdd и FileRemove, и добавляет туда входной int, являющийся индексом.
+        static int[] AddCount(int[] counts, int newCount)
+        {
+            int[] newCounts = new int[counts.Length + 1];
+            for (int i = 0; i < counts.Length; i++) counts[i] = newCounts[i];
+            newCounts[newCounts.Length - 1] = newCount;
+            return newCounts;
+        }
+    }
+}
